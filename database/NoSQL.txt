@@ -1,0 +1,111 @@
+residences: []=
+	id:integer,
+	{
+		address: {}={
+			id:integer,
+			street:string,
+			num: integer,
+			postal_code:string,
+			floor_unit:string
+		},
+		electric_meter: {}={
+			id:integer,
+			serial:string,
+			model:{}={
+				id:integer,
+				name:string,
+				brand:{}={
+					id:integer,
+					name:string
+				}
+			},
+		},
+		rate:{}={
+			id:integer,
+			name:string,
+			priceXKW:float
+		},
+		user:{}={
+			id:integer,
+			email:string,
+			dni:string,
+			name:string,
+			last_name:string
+		}
+}
+
+bills:[]{
+	id:integer,
+	electric_meter: {}={
+		id:integer,
+		serial:string,
+		model:{}={
+			id:integer,
+			name:string,
+			brand:{}={
+				id:integer,
+				name:string
+			}
+		}
+	},
+	initial_measure:{}={
+		id:integer,
+		datetime:datetime,
+		measure:integer
+	},
+	final_measure:{}={
+		id:integer,
+		datetime:datetime,
+		measure:integer
+	},
+	usage:integer,
+	rate:{}={
+		id:integer,
+		name:string,
+		priceXKW:float
+	},
+	total:float,
+	date:date,
+	expiration_date:date
+}
+
+
+users:[]={
+	id:integer,
+	email:string,
+	dni:string,
+	name:string,
+	last_name:string,
+	pass:string,
+	user_type:string
+}
+
+electric_meter: []={
+	id:integer,
+	serial:string,
+	model:{}={
+		id:integer,
+		name:string,
+		brand:{}={
+			id:integer,
+			name:string
+		}
+	},
+	pass:string
+}
+
+measures:[]={
+	id:integer,
+	electric_meter_id:integer,
+	datetime:datetime,
+	measure:integer,
+	usage:integer,
+	price:float
+}
+
+
+
+
+
+
+
