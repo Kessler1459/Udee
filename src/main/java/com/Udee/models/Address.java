@@ -36,7 +36,8 @@ public class Address {
     @NotNull @Size(min = 3, max = 30)
     private String postalCode;
 
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "address")
+    @OneToOne
+    @JoinColumn(name = "residence_id")
     @JsonBackReference("residence-address")
     @ToString.Exclude
     private Residence residence;

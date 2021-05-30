@@ -1,8 +1,6 @@
 package com.Udee.models;
 
-
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 
@@ -18,8 +16,7 @@ public class Residence {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "residence")
     private Address address;
 
     @OneToOne(fetch = FetchType.EAGER)

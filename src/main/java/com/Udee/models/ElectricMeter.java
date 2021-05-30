@@ -28,12 +28,10 @@ public class ElectricMeter implements Serializable {
     String serial;
 
     @ManyToOne
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "model_id")
    // @JsonManagedReference("meter-brand")
-    private Brand brand;
+    private Model model;
 
-    @NotNull @Size(min = 1)
-    private String model;
 
     @NotNull @Size(min = 9)
     private String pass;

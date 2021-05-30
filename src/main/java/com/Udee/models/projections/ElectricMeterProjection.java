@@ -1,10 +1,9 @@
 package com.Udee.models.projections;
 
-import com.Udee.models.Brand;
+import com.Udee.models.Model;
 
 public interface ElectricMeterProjection {
     Integer getId();
     String getSerial();
-    Brand getBrand();
-    String getModel();
+    Model getModel();
 }

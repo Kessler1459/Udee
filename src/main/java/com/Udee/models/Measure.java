@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
@@ -33,8 +34,13 @@ public class Measure {
     @NotNull
     private LocalDateTime dateTime;
 
+    private Integer measure;
+
+    @Null
+    private Float price;
+
     @Column(name = "`usage`")
-    @NotNull
+    @Null
     private Integer usage;
 
 }

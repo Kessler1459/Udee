@@ -3,6 +3,8 @@ package com.Udee.models.projections;
 import com.Udee.models.Measure;
 import com.Udee.models.Rate;
 
+import java.time.LocalDate;
+
 public interface BillProjection {
     Integer getId();
 
@@ -19,4 +21,8 @@ public interface BillProjection {
     Rate getRate();
 
     Float getTotal();
+
+    LocalDate getDate();
+
+    LocalDate getExpiration();
 }

@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 public class ElectricMeterDTO {
     Integer id;
     String serial;
-    BrandDTO brand;
-    String model;
+    ModelDTO model;
 }

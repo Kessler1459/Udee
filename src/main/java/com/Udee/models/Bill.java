@@ -39,6 +39,8 @@ public class Bill {
 
     private LocalDate date;
 
+    private LocalDate expiration;
+
     private Integer usage;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -52,17 +54,4 @@ public class Bill {
 
     private Float total;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Bill bill = (Bill) o;
-
-        return id != null && id.equals(bill.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 1883064667;
-    }
 }

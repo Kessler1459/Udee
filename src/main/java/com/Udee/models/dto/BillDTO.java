@@ -14,6 +14,7 @@ public class BillDTO {
     private MeasureDTO initialMeasure;
     private MeasureDTO lastMeasure;
     private LocalDate date;
+    private LocalDate expiration;
     private Integer usage;
     private Rate rate;
     private Payment payment;

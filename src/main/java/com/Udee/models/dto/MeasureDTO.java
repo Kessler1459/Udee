@@ -10,5 +10,6 @@ public class MeasureDTO {
     private BigInteger id;
     private LocalDateTime dateTime;
     private Integer usage;
-
+    private Integer measure;
+    private Float price;
 }
