@@ -285,7 +285,7 @@ BEGIN
     DECLARE user_id INT;
     DECLARE vUsage INT;
     DECLARE vFinished INTEGER DEFAULT 0;
-    DECLARE cur_residences CURSOR FOR SELECT residences.electric_meter_id, residences.rate_id, residences.user_id FROM residences;
+    DECLARE cur_residences CURSOR FOR SELECT residences.electric_meter_id, residences.user_id FROM residences;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = 1;
     OPEN cur_residences;
     billing_residences:
