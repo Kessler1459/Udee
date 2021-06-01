@@ -21,12 +21,12 @@ public class Model {
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "model")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "model", cascade = CascadeType.ALL)
     @JsonBackReference("meter-model")
     @ToString.Exclude
     private List<ElectricMeter> electricMeter;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "brand_id")
     private Brand brand;
 }

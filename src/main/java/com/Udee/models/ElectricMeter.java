@@ -1,8 +1,9 @@
 package com.Udee.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ public class ElectricMeter implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    //todo hacer unique en db
     @Column(unique = true)
     @NotNull @Size(min = 3)
     String serial;
@@ -32,7 +33,6 @@ public class ElectricMeter implements Serializable {
    // @JsonManagedReference("meter-brand")
     private Model model;
 
-
     @NotNull @Size(min = 9)
     private String pass;
 
@@ -41,7 +41,6 @@ public class ElectricMeter implements Serializable {
     private List<Measure> measures;
 
     @OneToOne(mappedBy = "electricMeter",fetch = FetchType.LAZY)
-    //@JsonIgnore
     @ToString.Exclude
     private Residence residence;
 

@@ -1,12 +1,15 @@
 package com.Udee.exceptions;
 
+import com.Udee.models.dto.MessageDTO;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolation;
@@ -18,32 +21,45 @@ import java.util.List;
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {BrandNotFoundException.class})
-    public ResponseEntity<Object> handleNotFound(RuntimeException ex){
-        return new ResponseEntity<>(ex.getLocalizedMessage(),HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handleNotFound(RuntimeException ex) {
+        return new ResponseEntity<>(new MessageDTO(ex.getLocalizedMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {ConstraintViolationException.class})
-    public ResponseEntity<Object> handleConstraintViolations(ConstraintViolationException ex){
-        List<String> errors=new ArrayList<>();
-        for (ConstraintViolation e: ex.getConstraintViolations()){
-            errors.add(e.getRootBeanClass().getName()+" "+e.getPropertyPath()+": "+e.getMessage());
+    public ResponseEntity<Object> handleConstraintViolations(ConstraintViolationException ex) {
+        List<String> errors = new ArrayList<>();
+        for (ConstraintViolation e : ex.getConstraintViolations()) {
+            errors.add(e.getRootBeanClass().getName() + " " + e.getPropertyPath() + ": " + e.getMessage());
         }
-        ApiError apiError=new ApiError(HttpStatus.BAD_REQUEST,errors,ex.getLocalizedMessage());
-        return new ResponseEntity<>(apiError,apiError.getHttpStatus());
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors, ex.getLocalizedMessage());
+        return new ResponseEntity<>(apiError, apiError.getHttpStatus());
     }
+
     //todo talvez poner estos errores en un objeto para la response no suelto
-    @ExceptionHandler(value = {PageException.class})
-    public ResponseEntity<Object> handlePaginationException(PageException ex){
-        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(value = PageException.class)
+    public ResponseEntity<Object> handlePaginationException(PageException ex) {
+        return new ResponseEntity<>(new MessageDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ResourceNotFoundException.class)
-    public ResponseEntity<Object> handlePaginationException(ResourceNotFoundException ex){
-        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handlePaginationException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(new MessageDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = HttpClientErrorException.class)
-    public ResponseEntity<Object> handleClientErrorException(HttpClientErrorException ex){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    public ResponseEntity<Object> handleClientErrorException(HttpClientErrorException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO(ex.getMessage()));
     }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO("Missing parameter " + ex.getParameterName() + " of type " + ex.getParameterType()));
+    }
+
+
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException (){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO("Entity could not be deleted"));
+    }
+
 }

@@ -1,10 +1,12 @@
 package com.Udee.models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,6 +28,7 @@ public class Measure {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "electric_meter_id")
     @ToString.Exclude
+    @JsonBackReference
     @NotNull
     private ElectricMeter electricMeter;
 

@@ -25,6 +25,7 @@ public class Brand {
     private String name;
 
     @OneToMany(mappedBy = "brand")
+    @JsonBackReference
     @ToString.Exclude
     private List<Model> model;
 

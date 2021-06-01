@@ -19,4 +19,7 @@ public interface MeasureRepository extends JpaRepository<Measure, BigInteger>, J
 
     @Query(value = "SELECT m.* FROM measures m where m.electric_meter_id=? and (m.datetime between ? and ?) order by m.datetime asc", nativeQuery = true)
     List<Measure> findAllByElectricMeterBetweenDates(Integer meterId,LocalDate from, LocalDate to);
+
+    @Query(value = "SELECT m.* FROM measures m join residences res on res.electric_meter_id=m.electric_meter_id where res.user_id=? and (m.datetime between ? and ?) order by m.datetime asc", nativeQuery = true)
+    List<Measure> findAllByUserBetweenDates(Integer clientId,LocalDate from, LocalDate to);
 }

@@ -6,13 +6,12 @@ import com.Udee.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class RateService {
-    private RateRepository rateRepository;
+    private final RateRepository rateRepository;
 
     @Autowired
     public RateService(RateRepository rateRepository) {
@@ -23,8 +22,8 @@ public class RateService {
         return rateRepository.save(r);
     }
 
-    public Page<Rate> findAll(Pageable pageable) {
-        return rateRepository.findAll(pageable);
+    public Page<Rate> findAll(Specification<Rate> spec, Pageable pageable) {
+        return rateRepository.findAll(spec,pageable);
     }
 
     public Rate findById(Integer id) {
@@ -35,11 +34,8 @@ public class RateService {
         rateRepository.deleteById(id);
     }
 
-    public Rate findByName(String name) {
-        return rateRepository.findByName(name).orElseThrow(RateNotFoundException::new);
-    }
 
-    public Page<Rate> findAllByName(Pageable pageable, String name) {
-        return rateRepository.findByNameStartingWith(pageable, name);
+    public Rate updateRate( Rate r) {
+        return rateRepository.save(r);
     }
 }

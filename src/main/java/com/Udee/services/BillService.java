@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-
 @Service
 public class BillService {
     private final BillRepository billRepository;
@@ -21,11 +19,7 @@ public class BillService {
         this.billRepository = billRepository;
     }
 
-    public Page<Bill> findAllByUser(Specification<Bill> spec, Pageable pageable) {
-        return billRepository.findAll(spec, pageable);
-    }
-
-    public Page<Bill> findAllByResidence(Specification<Bill> spec, Pageable pageable) {
+    public Page<Bill> findAll(Specification<Bill> spec, Pageable pageable) {
         return billRepository.findAll(spec, pageable);
     }
 
@@ -34,7 +28,7 @@ public class BillService {
     }
 
     public BillProjection findProjectedById(Integer id) {
-        return null;
+        return billRepository.findProjectionById(id).orElseThrow(BillNotFoundException::new);
     }
 
 

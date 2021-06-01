@@ -1,9 +1,10 @@
 package com.Udee.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-import org.hibernate.Hibernate;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -47,7 +48,7 @@ public class Bill {
     @JoinColumn(name = "rate_id")
     private Rate rate;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bill")
+    @OneToOne(mappedBy = "bill")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private Payment payment;

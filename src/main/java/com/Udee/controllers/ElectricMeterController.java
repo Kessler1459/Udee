@@ -5,29 +5,37 @@ import com.Udee.models.ElectricMeter;
 import com.Udee.models.dto.ElectricMeterDTO;
 import com.Udee.models.projections.ElectricMeterProjection;
 import com.Udee.services.ElectricMeterService;
-import static com.Udee.utils.CheckPages.checkPages;
-import static com.Udee.utils.PageHeaders.pageHeaders;
-import static com.Udee.utils.EntityUrlBuilder.buildURL;
+import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+import static com.Udee.utils.CheckPages.checkPages;
+import static com.Udee.utils.EntityUrlBuilder.buildURL;
+import static com.Udee.utils.PageHeaders.pageHeaders;
 
 @RestController
-@RequestMapping("/api/electricmeters")
+@RequestMapping("/api/back-office/electricmeters")
 public class ElectricMeterController {
     private final ElectricMeterService electricMeterService;
+    private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ElectricMeterController(ElectricMeterService electricMeterService, PasswordEncoder passwordEncoder) {
+    public ElectricMeterController(ElectricMeterService electricMeterService, ConversionService conversionService, PasswordEncoder passwordEncoder) {
         this.electricMeterService = electricMeterService;
+        this.conversionService = conversionService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -36,18 +44,26 @@ public class ElectricMeterController {
         electricMeter.setPass(passwordEncoder.encode(pass)); //todo talvez autogenerar esta pass
         electricMeter = electricMeterService.addElectricMeter(electricMeter);
         PostResponse p = new PostResponse(
-                buildURL("electricmeters", electricMeter.getId().toString()),
+                buildURL("api/back-office/electricmeters", electricMeter.getId().toString()),
                 HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(p.getUrl())).body(p);
     }
-
+    //todo revisar findbyid con no content bills
     @GetMapping
-    public ResponseEntity<List<ElectricMeterProjection>> findAll(Pageable pageable) {
-        final Page<ElectricMeterProjection> p = electricMeterService.findAll(pageable);
+    public ResponseEntity<List<ElectricMeterDTO>> findAll(
+            @Join(path = "model", alias = "m")
+            @Join(path = "m.brand", alias = "br")
+            @And({
+                    @Spec(path = "serial", spec = StartingWith.class),
+                    @Spec(path = "m.name",params = "model", spec = StartingWith.class),
+                    @Spec(path = "br.name",params = "brand", spec = StartingWith.class)
+            }) Specification<ElectricMeter> spec, Pageable pageable) {
+        Page<ElectricMeter> p = electricMeterService.findAll(spec,pageable);
         checkPages(p.getTotalPages(), pageable.getPageNumber());
-        return ResponseEntity.status(p.getSize() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
+        List<ElectricMeterDTO> dtoList = p.stream().map(meter -> conversionService.convert(meter, ElectricMeterDTO.class)).collect(Collectors.toList());
+        return ResponseEntity.status(dtoList.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
-                .body(p.getContent());
+                .body(dtoList);
     }
 
     @GetMapping("/{id}")
@@ -55,19 +71,10 @@ public class ElectricMeterController {
         return ResponseEntity.ok(electricMeterService.findProjectionById(id));
     }
 
-    @GetMapping(params = {"serial"})
-    public ResponseEntity<List<ElectricMeterProjection>> findBySerial(Pageable pageable, @RequestParam String serial) {
-        final Page<ElectricMeterProjection> p = electricMeterService.findBySerial(pageable, serial);
-        checkPages(p.getTotalPages(), pageable.getPageNumber());
-        return ResponseEntity.status(p.getSize() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
-                .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
-                .body(p.getContent());
-    }
-
-    @PutMapping("/{elId}/brand/{brandId}")
-    public ResponseEntity<ElectricMeterDTO> setBrandToElectricMeter(@PathVariable Integer elId, @PathVariable Integer brandId) {
-        ElectricMeterDTO electricMeterDTO = electricMeterService.setBrandToElectricMeter(elId, brandId);
-        return ResponseEntity.ok(electricMeterDTO);
+    @PutMapping("/{elId}/model/{modelId}")
+    public ResponseEntity<ElectricMeterDTO> setModelToElectricMeter(@PathVariable Integer elId, @PathVariable Integer modelId) {
+        ElectricMeter electricMeter = electricMeterService.setModelToElectricMeter(elId, modelId);
+        return ResponseEntity.ok(conversionService.convert(electricMeter,ElectricMeterDTO.class));
     }
 
 }

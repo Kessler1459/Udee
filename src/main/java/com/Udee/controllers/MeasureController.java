@@ -49,16 +49,23 @@ public class MeasureController {
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }
 
-    //todo chequear que exception tira al no poner todos los spec params java.lang.IllegalArgumentException: expected 2 http params
-    @GetMapping("/clients/residences/{residenceId}/usage")
-    public ResponseEntity<UsageDTO> findUsageBetweenDates(
+    @GetMapping("/web/residences/{residenceId}/usage")
+    public ResponseEntity<UsageDTO> findUsageBetweenDatesByResidence(
             @PathVariable Integer residenceId,
             @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(measureService.findUsageBetweenDates(residenceId, from, to));
+        return ResponseEntity.ok(measureService.findUsageBetweenDatesByResidence(residenceId, from, to));
     }
 
-    @GetMapping("/clients/residences/{residenceId}/measures")
+    @GetMapping("/web/clients/{clientId}/usage")
+    public ResponseEntity<UsageDTO> findUsageBetweenDatesByClient(
+            @PathVariable Integer clientId,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(measureService.findUsageBetweenDatesByClient(clientId, from, to));
+    }
+
+    @GetMapping("/web/residences/{residenceId}/measures")
     public ResponseEntity<List<MeasureDTO>> findMeasuresBetweenDates(
             Pageable pageable,
             @Join(path = "electricMeter", alias = "e")

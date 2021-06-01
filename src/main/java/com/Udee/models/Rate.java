@@ -1,9 +1,10 @@
 package com.Udee.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -38,17 +39,4 @@ public class Rate {
     @JsonIgnore
     private List<Bill> bills;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Rate rate = (Rate) o;
-
-        return id != null && id.equals(rate.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 1101571590;
-    }
 }

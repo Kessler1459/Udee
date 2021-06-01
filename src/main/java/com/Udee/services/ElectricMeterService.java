@@ -2,41 +2,37 @@ package com.Udee.services;
 
 
 import com.Udee.exceptions.ElectricMeterNotFoundException;
-import com.Udee.models.Brand;
 import com.Udee.models.ElectricMeter;
-import com.Udee.models.dto.ElectricMeterDTO;
+import com.Udee.models.Model;
 import com.Udee.models.projections.ElectricMeterProjection;
 import com.Udee.repository.ElectricMeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ElectricMeterService {
     private final ElectricMeterRepository electricMeterRepository;
-    private final BrandService brandService;
     private final ConversionService conversionService;
+    private final ModelService modelService;
 
     @Autowired
-    public ElectricMeterService(ElectricMeterRepository electricMeterRepository, BrandService brandService, ConversionService conversionService) {
+    public ElectricMeterService(ElectricMeterRepository electricMeterRepository, ConversionService conversionService, ModelService modelService) {
         this.electricMeterRepository = electricMeterRepository;
-        this.brandService = brandService;
+        this.modelService = modelService;
         this.conversionService = conversionService;
     }
 
 
     public ElectricMeter addElectricMeter(ElectricMeter electricMeter){
-        if (electricMeter.getBrand()!=null) {
-            Brand b= brandService.findOneByName(electricMeter.getBrand().getName());
-            electricMeter.setBrand(b);
-        }
         return electricMeterRepository.save(electricMeter);
     }
 
-    public Page<ElectricMeterProjection> findAll(Pageable pageable) {
-        return electricMeterRepository.findAllProjected(pageable);
+    public Page<ElectricMeter> findAll(Specification<ElectricMeter> spec, Pageable pageable) {
+        return electricMeterRepository.findAll(spec,pageable);
     }
 
     public ElectricMeter findById(Integer elId){
@@ -48,11 +44,11 @@ public class ElectricMeterService {
         return electricMeterRepository.findProjectionById(elId).orElseThrow(ElectricMeterNotFoundException::new);
     }
 
-    public ElectricMeterDTO setBrandToElectricMeter(Integer elId, Integer brandId) {
+    public ElectricMeter setModelToElectricMeter(Integer elId, Integer modelId) {
         ElectricMeter e=findById(elId);
-        Brand b= brandService.findById(brandId);
-        e.setBrand(b);
-        return conversionService.convert(electricMeterRepository.save(e), ElectricMeterDTO.class);
+        Model b= modelService.findById(modelId);
+        e.setModel(b);
+        return electricMeterRepository.save(e);
     }
 
     public ElectricMeter findOneBySerial(String serial) {
