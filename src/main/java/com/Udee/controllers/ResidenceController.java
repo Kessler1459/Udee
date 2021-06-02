@@ -2,18 +2,13 @@ package com.Udee.controllers;
 
 import com.Udee.PostResponse;
 import com.Udee.models.Residence;
+import com.Udee.models.dto.MessageDTO;
 import com.Udee.models.dto.ResidenceDTO;
 import com.Udee.models.projections.ResidenceProjection;
 import com.Udee.services.ResidenceService;
-
-import static com.Udee.utils.EntityUrlBuilder.buildURL;
-import static com.Udee.utils.CheckPages.checkPages;
-import static com.Udee.utils.PageHeaders.pageHeaders;
-
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -27,6 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.Udee.utils.CheckPages.checkPages;
+import static com.Udee.utils.EntityUrlBuilder.buildURL;
+import static com.Udee.utils.PageHeaders.pageHeaders;
 
 @RestController
 @RequestMapping("/api/back-office/residences")
@@ -57,13 +56,19 @@ public class ResidenceController {
     @PostMapping
     public ResponseEntity<PostResponse> addResidence(@RequestBody Residence r) {
         r = residenceService.addResidence(r);
-        final PostResponse res = new PostResponse(buildURL("residences", r.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        final PostResponse res = new PostResponse(buildURL("api/back-office/residences", r.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResidenceProjection> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(residenceService.findProjectionById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public  ResponseEntity<MessageDTO> deleteResidence(@PathVariable Integer id){
+        residenceService.delete(id);
+        return ResponseEntity.ok(new MessageDTO("Residence has been deleted"));
     }
 
     @PutMapping("/{residenceId}/electricMeter/{meterId}")

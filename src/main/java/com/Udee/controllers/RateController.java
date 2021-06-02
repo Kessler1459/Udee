@@ -2,6 +2,7 @@ package com.Udee.controllers;
 
 import com.Udee.PostResponse;
 import com.Udee.models.Rate;
+import com.Udee.models.dto.MessageDTO;
 import com.Udee.services.RateService;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
@@ -60,9 +61,9 @@ public class RateController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRate(@PathVariable Integer id) {
+    public ResponseEntity<MessageDTO> deleteRate(@PathVariable Integer id) {
         rateService.deleteRate(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok(new MessageDTO("Rate has been deleted"));
     }
 
 }

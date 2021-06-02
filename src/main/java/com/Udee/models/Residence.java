@@ -1,6 +1,10 @@
 package com.Udee.models;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -14,10 +18,8 @@ public class Residence {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
-
-    @OneToOne(cascade = CascadeType.ALL,mappedBy = "residence")
-    private Address address;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "electric_meter_id")
@@ -30,5 +32,8 @@ public class Residence {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(mappedBy = "residence", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;
 
 }

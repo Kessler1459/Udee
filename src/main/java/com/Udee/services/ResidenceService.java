@@ -8,14 +8,13 @@ import com.Udee.models.User;
 import com.Udee.models.projections.ResidenceProjection;
 import com.Udee.repository.ResidenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.List;
 
 @Service
 public class ResidenceService {
@@ -37,6 +36,7 @@ public class ResidenceService {
     }
 
     public Residence addResidence(Residence residence) {
+        residence.getAddress().setResidence(residence);
         return residenceRepository.save(residence);
     }
 
@@ -69,5 +69,14 @@ public class ResidenceService {
         Residence r = findById(residenceId);
         r.setUser(user);
         return residenceRepository.save(r);
+    }
+
+    public void delete(Integer id) {
+        try{
+            residenceRepository.deleteById(id);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new ResidenceNotFoundException();
+        }
     }
 }

@@ -48,7 +48,7 @@ public class BillController {
                     @Spec(path = "payment", params = "notPaid", spec = NotNull.class)}) Specification<Bill> spec) {
         return getListResponseEntity(pageable, spec);
     }
-    
+
     @GetMapping("/web/residences/{idResidence}/bills")
     private ResponseEntity<List<BillDTO>> findAllByResidence(
             Pageable pageable,

@@ -4,6 +4,7 @@ import com.Udee.exceptions.RateNotFoundException;
 import com.Udee.models.Rate;
 import com.Udee.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,7 +32,12 @@ public class RateService {
     }
 
     public void deleteRate(Integer id) {
-        rateRepository.deleteById(id);
+        try {
+            rateRepository.deleteById(id);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new RateNotFoundException();
+        }
     }
 
 

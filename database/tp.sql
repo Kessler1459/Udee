@@ -25,6 +25,7 @@ CREATE TABLE payments
     CONSTRAINT fk_payment_bill FOREIGN KEY (bill_id) REFERENCES bills (id) ON DELETE CASCADE
 );
 
+
 CREATE TABLE bills
 (
     id                 INT AUTO_INCREMENT,
@@ -40,12 +41,12 @@ CREATE TABLE bills
     CONSTRAINT pk_bill PRIMARY KEY (id),
     CONSTRAINT fk_user_bill FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT fk_electric_meter_bill FOREIGN KEY (electric_meter_id) REFERENCES electric_meters (id),
-    CONSTRAINT fk_initial_measure FOREIGN KEY (initial_measure_id) REFERENCES measures (id),
-    CONSTRAINT fk_final_measure FOREIGN KEY (final_measure_id) REFERENCES measures (id),
+    CONSTRAINT fk_initial_measure FOREIGN KEY (initial_measure_id) REFERENCES measures (id) ON DELETE CASCADE,
+    CONSTRAINT fk_final_measure FOREIGN KEY (final_measure_id) REFERENCES measures (id) ON DELETE CASCADE,
     CONSTRAINT fk_rate_bill FOREIGN KEY (rate_id) REFERENCES rates (id)
 );
 
-
+DROP TABLE residences
 CREATE TABLE addresses
 (
     id          INT AUTO_INCREMENT,
@@ -53,9 +54,10 @@ CREATE TABLE addresses
     num         INT         NOT NULL,
     postal_code VARCHAR(15) NOT NULL,
     floor_unit  VARCHAR(10),
-    residence_id INT,
+    residence_id INT NOT NULL,
     CONSTRAINT pk_address PRIMARY KEY (id),
-    CONSTRAINT fk_address_residence FOREIGN KEY(residence_id) REFERENCES residences(id) ON DELETE CASCADE
+    CONSTRAINT fk_address_residence FOREIGN KEY(residence_id) REFERENCES residences(id) ON DELETE CASCADE,
+    UNIQUE unq_address (street,num,floor_unit)
 );
 
 CREATE TABLE residences
@@ -317,6 +319,15 @@ DELIMITER $$
 CREATE TRIGGER bill_expiration BEFORE INSERT ON bills FOR EACH ROW
 BEGIN
 	SET new.expiration=DATE_ADD(new.date,INTERVAL 15 DAY);
+END $$
+DELIMITER ;
+
+#TRIGGER BORRADO DE MEDICIONES DE UN MEDIDOR AL BORRAR DOMICILIO-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DELIMITER $$
+CREATE TRIGGER delete_measures AFTER DELETE ON residences FOR EACH ROW
+BEGIN
+	DELETE FROM measures WHERE measures.electric_meter_id=old.electric_meter_id;
 END $$
 DELIMITER ;
 

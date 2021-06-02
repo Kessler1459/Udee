@@ -41,6 +41,7 @@ public class MeasureController {
         this.conversionService = conversionService;
     }
 
+    //todo prohibir measure menor a la anterior
     //TODO talvez alguna key o auth
     @PostMapping("/electricmeters/{meterSerial}/measures")
     public ResponseEntity<PostResponse> addMeasure(@PathVariable String meterSerial, @RequestBody Measure measure) {

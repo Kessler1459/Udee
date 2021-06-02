@@ -3,11 +3,11 @@ package com.Udee.services;
 
 import com.Udee.exceptions.ElectricMeterNotFoundException;
 import com.Udee.models.ElectricMeter;
-import com.Udee.models.Model;
 import com.Udee.models.projections.ElectricMeterProjection;
 import com.Udee.repository.ElectricMeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -46,8 +46,7 @@ public class ElectricMeterService {
 
     public ElectricMeter setModelToElectricMeter(Integer elId, Integer modelId) {
         ElectricMeter e=findById(elId);
-        Model b= modelService.findById(modelId);
-        e.setModel(b);
+        e.setModel(modelService.findById(modelId));
         return electricMeterRepository.save(e);
     }
 
@@ -55,7 +54,11 @@ public class ElectricMeterService {
         return electricMeterRepository.findBySerial(serial).orElseThrow(ElectricMeterNotFoundException::new);
     }
 
-    public Page<ElectricMeterProjection> findBySerial(Pageable pageable,String serial){
-        return electricMeterRepository.findBySerialStartingWith(pageable,serial);
+    public void delete(Integer id) {
+        try{
+            electricMeterRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ElectricMeterNotFoundException();
+        }
     }
 }

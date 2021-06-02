@@ -3,7 +3,6 @@ package com.Udee.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,10 +12,10 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "addresses")
 public class Address {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -36,10 +35,12 @@ public class Address {
     @NotNull @Size(min = 3, max = 30)
     private String postalCode;
 
-    @OneToOne
-    @JoinColumn(name = "residence_id")
+    @OneToOne( optional = false, orphanRemoval = true)
+    @JoinColumn(name = "residence_id", nullable = false, unique = true)
     @JsonBackReference("residence-address")
     @ToString.Exclude
     private Residence residence;
+
+
 
 }

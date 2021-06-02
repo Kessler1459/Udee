@@ -3,6 +3,7 @@ package com.Udee.controllers;
 import com.Udee.PostResponse;
 import com.Udee.models.ElectricMeter;
 import com.Udee.models.dto.ElectricMeterDTO;
+import com.Udee.models.dto.MessageDTO;
 import com.Udee.models.projections.ElectricMeterProjection;
 import com.Udee.services.ElectricMeterService;
 import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
@@ -18,9 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static com.Udee.utils.CheckPages.checkPages;
 import static com.Udee.utils.EntityUrlBuilder.buildURL;
 import static com.Udee.utils.PageHeaders.pageHeaders;
@@ -75,6 +78,12 @@ public class ElectricMeterController {
     public ResponseEntity<ElectricMeterDTO> setModelToElectricMeter(@PathVariable Integer elId, @PathVariable Integer modelId) {
         ElectricMeter electricMeter = electricMeterService.setModelToElectricMeter(elId, modelId);
         return ResponseEntity.ok(conversionService.convert(electricMeter,ElectricMeterDTO.class));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MessageDTO> deleteMeter(@PathVariable Integer id){
+        electricMeterService.delete(id);
+        return ResponseEntity.ok(new MessageDTO("Meter has been deleted"));
     }
 
 }
