@@ -1,6 +1,6 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.ResidenceNotFoundException;
+import com.Udee.exceptions.notFound.ResidenceNotFoundException;
 import com.Udee.models.ElectricMeter;
 import com.Udee.models.Rate;
 import com.Udee.models.Residence;

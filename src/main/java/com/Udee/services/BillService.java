@@ -1,6 +1,6 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.BillNotFoundException;
+import com.Udee.exceptions.notFound.BillNotFoundException;
 import com.Udee.models.Bill;
 import com.Udee.models.projections.BillProjection;
 import com.Udee.repository.BillRepository;

@@ -1,6 +1,6 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.UserNotFoundException;
+import com.Udee.exceptions.notFound.UserNotFoundException;
 import com.Udee.models.User;
 import com.Udee.models.projections.UserProjection;
 import com.Udee.repository.UserRepository;

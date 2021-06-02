@@ -1,7 +1,7 @@
 package com.Udee.services;
 
 
-import com.Udee.exceptions.ElectricMeterNotFoundException;
+import com.Udee.exceptions.notFound.ElectricMeterNotFoundException;
 import com.Udee.models.ElectricMeter;
 import com.Udee.models.projections.ElectricMeterProjection;
 import com.Udee.repository.ElectricMeterRepository;

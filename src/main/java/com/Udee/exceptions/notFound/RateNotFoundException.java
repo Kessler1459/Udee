@@ -1,4 +1,4 @@
-package com.Udee.exceptions;
+package com.Udee.exceptions.notFound;
 
 public class RateNotFoundException extends ResourceNotFoundException {
     public RateNotFoundException() {

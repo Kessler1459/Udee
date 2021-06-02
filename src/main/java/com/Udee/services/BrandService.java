@@ -1,7 +1,7 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.BrandNotFoundException;
-import com.Udee.exceptions.ElectricMeterNotFoundException;
+import com.Udee.exceptions.notFound.BrandNotFoundException;
+import com.Udee.exceptions.notFound.ElectricMeterNotFoundException;
 import com.Udee.models.Brand;
 import com.Udee.models.Model;
 import com.Udee.repository.BrandRepository;

@@ -1,5 +1,7 @@
 package com.Udee.exceptions;
 
+import com.Udee.exceptions.notFound.BrandNotFoundException;
+import com.Udee.exceptions.notFound.ResourceNotFoundException;
 import com.Udee.models.dto.MessageDTO;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;

@@ -1,6 +1,6 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.PaymentNotFoundException;
+import com.Udee.exceptions.notFound.PaymentNotFoundException;
 import com.Udee.models.Bill;
 import com.Udee.models.Payment;
 import com.Udee.repository.PaymentRepository;

@@ -1,6 +1,6 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.ModelNotFoundException;
+import com.Udee.exceptions.notFound.ModelNotFoundException;
 import com.Udee.models.Model;
 import com.Udee.repository.ModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;

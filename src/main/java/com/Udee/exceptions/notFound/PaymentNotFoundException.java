@@ -1,4 +1,4 @@
-package com.Udee.exceptions;
+package com.Udee.exceptions.notFound;
 
 public class PaymentNotFoundException extends ResourceNotFoundException{
     public PaymentNotFoundException() {

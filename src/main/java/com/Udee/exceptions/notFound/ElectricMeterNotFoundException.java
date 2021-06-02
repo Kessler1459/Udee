@@ -1,4 +1,4 @@
-package com.Udee.exceptions;
+package com.Udee.exceptions.notFound;
 
 public class ElectricMeterNotFoundException extends ResourceNotFoundException{
     public ElectricMeterNotFoundException() {

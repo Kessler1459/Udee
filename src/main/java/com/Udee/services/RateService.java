@@ -1,6 +1,6 @@
 package com.Udee.services;
 
-import com.Udee.exceptions.RateNotFoundException;
+import com.Udee.exceptions.notFound.RateNotFoundException;
 import com.Udee.models.Rate;
 import com.Udee.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
