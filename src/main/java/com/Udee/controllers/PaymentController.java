@@ -2,39 +2,70 @@ package com.Udee.controllers;
 
 import com.Udee.PostResponse;
 import com.Udee.models.Payment;
+import com.Udee.models.dto.PaymentDTO;
 import com.Udee.services.PaymentService;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
+import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.Udee.utils.CheckPages.checkPages;
-import static com.Udee.utils.PageHeaders.pageHeaders;
 import static com.Udee.utils.EntityUrlBuilder.buildURL;
+import static com.Udee.utils.PageHeaders.pageHeaders;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api")
 public class PaymentController {
     private final PaymentService paymentService;
+    private final ConversionService conversionService;
 
     @Autowired
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, ConversionService conversionService) {
         this.paymentService = paymentService;
+        this.conversionService = conversionService;
     }
 
-    @PostMapping("/bills/{billId}/payments")
-    public ResponseEntity<PostResponse> addPayment(@PathVariable Integer billId, @RequestBody Payment payment){
-        payment=paymentService.addPayment(billId,payment);
-        PostResponse res=new PostResponse(buildURL("payments",payment.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+    @PostMapping("/web/bills/{billId}/payments")
+    public ResponseEntity<PostResponse> addPayment(@PathVariable Integer billId, @RequestBody Payment payment) {
+        payment = paymentService.addPayment(billId, payment);
+        PostResponse res = new PostResponse(buildURL("payments", payment.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }
 
-    @GetMapping("/payments/{id}")
-    public ResponseEntity<Payment> findById(@PathVariable Integer id){
-        return ResponseEntity.ok(paymentService.findById(id));
+    @GetMapping("/back-office/payments/{id}")
+    public ResponseEntity<PaymentDTO> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok(conversionService.convert(paymentService.findById(id), PaymentDTO.class));
     }
 
-
+    @GetMapping("/back-office/payments")
+    public ResponseEntity<List<PaymentDTO>> findAll(
+            @Join(path = "bill", alias = "b")
+            @Join(path = "b.user", alias = "u")
+            @And({
+                    @Spec(path = "amount", params = {"min", "max"}, spec = Between.class),
+                    @Spec(path = "date", params = {"from", "to"}, spec = Between.class),
+                    @Spec(path = "u.name", spec = StartingWith.class),
+                    @Spec(path = "lastName", spec = StartingWith.class)
+            }) Specification<Payment> spec, Pageable pagination
+    ) {
+        Page<Payment> p = paymentService.findAll(spec, pagination);
+        checkPages(p.getTotalPages(), pagination.getPageNumber());
+        List<PaymentDTO> dtoList= p.stream().map(payment -> conversionService.convert(payment, PaymentDTO.class)).collect(Collectors.toList());
+        return ResponseEntity.status(p.getTotalElements() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
+                .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
+                .body(dtoList);
+    }
 }

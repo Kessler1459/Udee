@@ -1,10 +1,12 @@
 package com.Udee.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 

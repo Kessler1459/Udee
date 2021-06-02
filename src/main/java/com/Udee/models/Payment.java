@@ -1,7 +1,7 @@
 package com.Udee.models;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,7 +25,7 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "bill_id")
     @ToString.Exclude
-    @JsonIgnore
+    @JsonBackReference("payment-bill")
     private Bill bill;
 
     private BigDecimal amount;
