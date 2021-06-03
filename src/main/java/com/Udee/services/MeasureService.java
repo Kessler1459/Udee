@@ -4,6 +4,7 @@ import com.Udee.models.Measure;
 import com.Udee.models.Residence;
 import com.Udee.models.User;
 import com.Udee.models.dto.UsageDTO;
+import com.Udee.models.projections.UserRank;
 import com.Udee.repository.MeasureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,4 +63,7 @@ public class MeasureService {
     }
 
 
+    public List<UserRank> findRankBetweenDates(LocalDate from, LocalDate to) {
+        return measureRepository.findRankBetweenDates(from,to);
+    }
 }

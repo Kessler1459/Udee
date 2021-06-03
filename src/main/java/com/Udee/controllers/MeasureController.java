@@ -4,6 +4,7 @@ import com.Udee.PostResponse;
 import com.Udee.models.Measure;
 import com.Udee.models.dto.MeasureDTO;
 import com.Udee.models.dto.UsageDTO;
+import com.Udee.models.projections.UserRank;
 import com.Udee.services.MeasureService;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -80,5 +81,12 @@ public class MeasureController {
         return ResponseEntity.status(dtoList.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
                 .body(dtoList);
+    }
+
+    @GetMapping("/back-office/usage")
+    public ResponseEntity<List<UserRank>> getTopTenUsers(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to){
+        final List<UserRank> userRanks=measureService.findRankBetweenDates(from,to);
+        return ResponseEntity.status(userRanks.size()>0?HttpStatus.OK:HttpStatus.NO_CONTENT).body(userRanks);
     }
 }

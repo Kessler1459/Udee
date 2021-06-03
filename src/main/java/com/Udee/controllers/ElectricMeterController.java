@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.JoinType;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,9 +54,8 @@ public class ElectricMeterController {
     }
     //todo revisar findbyid con no content bills
     @GetMapping
-  //  @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<ElectricMeterDTO>> findAll(
-            @Join(path = "model", alias = "m")
+            @Join(path = "model", alias = "m",type = JoinType.LEFT)
             @Join(path = "m.brand", alias = "br")
             @And({
                     @Spec(path = "serial", spec = StartingWith.class),
