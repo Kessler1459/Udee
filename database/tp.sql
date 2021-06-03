@@ -1,7 +1,7 @@
 CREATE DATABASE udee;
 USE udee;
 
-
+DROP TABLE users
 CREATE TABLE users
 (
     id             INT AUTO_INCREMENT,
@@ -11,9 +11,9 @@ CREATE TABLE users
     NAME           VARCHAR(80)                NOT NULL,
     last_name      VARCHAR(80)                NOT NULL,
     pass           VARCHAR(100)               NOT NULL,
-    CONSTRAINT pk_users PRIMARY KEY (id)
+    CONSTRAINT pk_users PRIMARY KEY (id),
+    UNIQUE unq_user (email,user_type_enum)
 );
-
 
 CREATE TABLE payments
 (
@@ -39,14 +39,14 @@ CREATE TABLE bills
     DATE               DATE,
     expiration		DATE,
     CONSTRAINT pk_bill PRIMARY KEY (id),
-    CONSTRAINT fk_user_bill FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_user_bill FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_electric_meter_bill FOREIGN KEY (electric_meter_id) REFERENCES electric_meters (id),
     CONSTRAINT fk_initial_measure FOREIGN KEY (initial_measure_id) REFERENCES measures (id) ON DELETE CASCADE,
     CONSTRAINT fk_final_measure FOREIGN KEY (final_measure_id) REFERENCES measures (id) ON DELETE CASCADE,
     CONSTRAINT fk_rate_bill FOREIGN KEY (rate_id) REFERENCES rates (id)
 );
 
-DROP TABLE residences
+
 CREATE TABLE addresses
 (
     id          INT AUTO_INCREMENT,
@@ -68,7 +68,7 @@ CREATE TABLE residences
     user_id           INT,
     CONSTRAINT pk_residence PRIMARY KEY (id),
     CONSTRAINT fk_electric_meter_id FOREIGN KEY (electric_meter_id) REFERENCES electric_meters (id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 
