@@ -1,8 +1,7 @@
 package com.Udee.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -16,7 +15,7 @@ import java.util.List;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "user_type_enum"})})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,7 @@ public class User {
     @NotNull
     @Min(10000000)
     private Integer dni;
-    //todo talvez chequear el unique con dni+usertype
+
     @Column(name = "user_type_enum")
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
@@ -45,7 +44,7 @@ public class User {
     @Size(min = 7)
     private String pass;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Residence> residences;
 

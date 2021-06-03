@@ -53,6 +53,7 @@ public class ElectricMeterController {
     }
     //todo revisar findbyid con no content bills
     @GetMapping
+  //  @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<ElectricMeterDTO>> findAll(
             @Join(path = "model", alias = "m")
             @Join(path = "m.brand", alias = "br")

@@ -2,14 +2,14 @@ package com.Udee.controllers;
 
 import com.Udee.PostResponse;
 import com.Udee.models.User;
+import com.Udee.models.dto.LoginResponse;
 import com.Udee.models.dto.UserDTO;
+import com.Udee.models.dto.UserLoginDTO;
 import com.Udee.models.projections.UserProjection;
 import com.Udee.services.UserService;
-
-import static com.Udee.utils.CheckPages.checkPages;
-import static com.Udee.utils.PageHeaders.pageHeaders;
-import static com.Udee.utils.EntityUrlBuilder.buildURL;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -20,33 +20,40 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.Udee.utils.CheckPages.checkPages;
+import static com.Udee.utils.Constants.JWT_SECRET;
+import static com.Udee.utils.EntityUrlBuilder.buildURL;
+import static com.Udee.utils.PageHeaders.pageHeaders;
+
 
 @RestController
-@RequestMapping(value = "api/")
+@RequestMapping(value = "/api")
 public class UserController {
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final ConversionService conversionService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, ConversionService conversionService) {
+    public UserController(UserService userService, ConversionService conversionService, ObjectMapper objectMapper) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
+
         this.conversionService = conversionService;
+        this.objectMapper = objectMapper;
     }
 
-    @PostMapping(value = {"clients", "back-office"})
-    public ResponseEntity<PostResponse> addUser(@RequestBody User user, @RequestHeader("Authorization") String pass) {
-        user.setPass(passwordEncoder.encode(pass));
+    @PostMapping("/back-office/users")
+    public ResponseEntity<PostResponse> addUser(@RequestBody User user) {
         user = userService.addUser(user);
-        PostResponse p = new PostResponse(buildURL("users", user.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        PostResponse p = new PostResponse(buildURL("api/back-office/users", user.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(p.getUrl())).body(p);
     }
 
@@ -63,12 +70,36 @@ public class UserController {
                 .body(list);
     }
 
-    //todo agregar editar endpointD
-
     @GetMapping("/back-office/clients/{id}")
     public ResponseEntity<UserProjection> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.findProjectedById(id));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody UserLoginDTO userDTO){
+        User user=userService.login(userDTO.getEmail(),userDTO.getPass());
+        if (user!=null){
+            UserDTO dto = conversionService.convert(user, UserDTO.class);
+            return ResponseEntity.ok(new LoginResponse(this.generateToken(dto,user.getUserType().getType())));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
+    private String generateToken(UserDTO userDto,String authority) {
+        try {
+            List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(authority);
+            return Jwts
+                    .builder()
+                    .setId("JWT")
+                    .setSubject(userDto.getEmail())
+                    .claim("user", objectMapper.writeValueAsString(userDto))
+                    .claim("authorities", grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + 100000000))
+                    .signWith(SignatureAlgorithm.HS512, JWT_SECRET.getBytes()).compact();
+        } catch (Exception e) {
+            return "dummy";
+        }
+    }
 }

@@ -60,8 +60,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
 
     @ExceptionHandler(value = DataIntegrityViolationException.class)
-    public ResponseEntity<Object> handleDataIntegrityViolationException (){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO("Entity could not be deleted"));
+    public ResponseEntity<Object> handleDataIntegrityViolationException (DataIntegrityViolationException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO(ex.getLocalizedMessage()));
     }
 
 }
