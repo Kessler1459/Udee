@@ -68,7 +68,7 @@ public class PaymentController {
             @And({
                     @Spec(path = "amount", params = {"min", "max"}, spec = Between.class),
                     @Spec(path = "date", params = {"from", "to"}, spec = Between.class),
-                    @Spec(path = "u.name", spec = StartingWith.class),
+                    @Spec(path = "u.name",params = "name", spec = StartingWith.class),
                     @Spec(path = "lastName", spec = StartingWith.class)
             }) Specification<Payment> spec, Pageable pagination
     ) {
