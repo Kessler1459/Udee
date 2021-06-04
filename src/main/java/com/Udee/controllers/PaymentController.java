@@ -1,8 +1,11 @@
 package com.Udee.controllers;
 
 import com.Udee.PostResponse;
+import com.Udee.models.Bill;
 import com.Udee.models.Payment;
 import com.Udee.models.dto.PaymentDTO;
+import com.Udee.models.dto.UserDTO;
+import com.Udee.services.BillService;
 import com.Udee.services.PaymentService;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
@@ -16,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -31,16 +36,22 @@ import static com.Udee.utils.PageHeaders.pageHeaders;
 public class PaymentController {
     private final PaymentService paymentService;
     private final ConversionService conversionService;
+    private final BillService billService;
 
     @Autowired
-    public PaymentController(PaymentService paymentService, ConversionService conversionService) {
+    public PaymentController(PaymentService paymentService, ConversionService conversionService, BillService billService) {
         this.paymentService = paymentService;
         this.conversionService = conversionService;
+        this.billService = billService;
     }
 
     @PostMapping("/web/bills/{billId}/payments")
-    public ResponseEntity<PostResponse> addPayment(@PathVariable Integer billId, @RequestBody Payment payment) {
-        payment = paymentService.addPayment(billId, payment);
+    public ResponseEntity<PostResponse> addPayment(@PathVariable Integer billId, @RequestBody Payment payment, Authentication auth) {
+        Bill b=billService.findById(billId);
+        if (!b.getUser().getId().equals(((UserDTO)auth.getPrincipal()).getId())){
+            throw new AccessDeniedException("Not owned by this user");
+        }
+        payment = paymentService.addPayment(b, payment);
         PostResponse res = new PostResponse(buildURL("payments", payment.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }

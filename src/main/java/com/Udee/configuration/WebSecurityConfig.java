@@ -21,6 +21,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/login").permitAll()
+                .antMatchers(HttpMethod.POST,"/api/measures").permitAll()
                 .antMatchers("/api/back-office/**").hasAuthority(UserType.EMPLOYEE.getType())
                 .antMatchers("/api/web/**").hasAuthority(UserType.CLIENT.getType())
                 .anyRequest().authenticated();
