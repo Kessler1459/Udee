@@ -6,7 +6,6 @@ import com.Udee.models.ElectricMeter;
 import com.Udee.models.projections.ElectricMeterProjection;
 import com.Udee.repository.ElectricMeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,14 +15,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ElectricMeterService {
     private final ElectricMeterRepository electricMeterRepository;
-    private final ConversionService conversionService;
     private final ModelService modelService;
 
     @Autowired
-    public ElectricMeterService(ElectricMeterRepository electricMeterRepository, ConversionService conversionService, ModelService modelService) {
+    public ElectricMeterService(ElectricMeterRepository electricMeterRepository, ModelService modelService) {
         this.electricMeterRepository = electricMeterRepository;
         this.modelService = modelService;
-        this.conversionService = conversionService;
     }
 
 
@@ -51,7 +48,7 @@ public class ElectricMeterService {
     }
 
     public ElectricMeter findOneBySerial(String serial) {
-        return electricMeterRepository.findBySerial(serial).orElseThrow(ElectricMeterNotFoundException::new);
+        return electricMeterRepository.findBySerial(serial).orElse(null);
     }
 
     public void delete(Integer id) {

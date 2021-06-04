@@ -8,23 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public User addUser(User user) {
-        user.setPass(passwordEncoder.encode(user.getPass()));
         return userRepository.save(user);
     }
 
@@ -41,8 +37,7 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
-    public User login(String email, String pass) {
-        User u = userRepository.findByEmail(email);
-        return passwordEncoder.matches(pass, u.getPass()) ? u : null;
+    public User findByEmail(String email) {
+        return  userRepository.findByEmail(email).orElse(null);
     }
 }

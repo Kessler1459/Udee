@@ -18,20 +18,17 @@ import java.util.List;
 @Service
 public class MeasureService {
     private final MeasureRepository measureRepository;
-    private final ElectricMeterService electricMeterService;
     private final ResidenceService residenceService;
     private final UserService userService;
 
     @Autowired
-    public MeasureService(MeasureRepository measureRepository, ElectricMeterService electricMeterService, ResidenceService residenceService, UserService userService) {
+    public MeasureService(MeasureRepository measureRepository, ResidenceService residenceService, UserService userService) {
         this.measureRepository = measureRepository;
-        this.electricMeterService = electricMeterService;
         this.residenceService = residenceService;
         this.userService = userService;
     }
 
-    public Measure addMeasure(String meterSerial, Measure measure) {
-        measure.setElectricMeter(electricMeterService.findOneBySerial(meterSerial));
+    public Measure addMeasure(Measure measure) {
         return measureRepository.save(measure);
     }
 
@@ -64,6 +61,6 @@ public class MeasureService {
 
 
     public List<UserRank> findRankBetweenDates(LocalDate from, LocalDate to) {
-        return measureRepository.findRankBetweenDates(from,to);
+        return measureRepository.findRankBetweenDates(from, to);
     }
 }

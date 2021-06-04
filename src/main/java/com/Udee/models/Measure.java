@@ -3,10 +3,7 @@ package com.Udee.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,6 +16,8 @@ import java.time.LocalDateTime;
 @ToString
 @RequiredArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "measures")
 public class Measure {
     @Id

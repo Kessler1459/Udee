@@ -1,6 +1,7 @@
 package com.Udee.controllers;
 
 import com.Udee.PostResponse;
+import com.Udee.exceptions.WrongCredentialsException;
 import com.Udee.models.User;
 import com.Udee.models.dto.LoginResponse;
 import com.Udee.models.dto.UserDTO;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -41,17 +43,19 @@ public class UserController {
     private final UserService userService;
     private final ConversionService conversionService;
     private final ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserController(UserService userService, ConversionService conversionService, ObjectMapper objectMapper) {
+    public UserController(UserService userService, ConversionService conversionService, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
         this.userService = userService;
-
         this.conversionService = conversionService;
         this.objectMapper = objectMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/back-office/users")
     public ResponseEntity<PostResponse> addUser(@RequestBody User user) {
+        user.setPass(passwordEncoder.encode(user.getPass()));
         user = userService.addUser(user);
         PostResponse p = new PostResponse(buildURL("api/back-office/users", user.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(p.getUrl())).body(p);
@@ -62,9 +66,9 @@ public class UserController {
             @Spec(path = "name", spec = Like.class),
             @Spec(path = "lastName", spec = Like.class),
             @Spec(path = "email", spec = Like.class)}) Specification<User> spec) {
-        final Page<User> p = userService.findAll(spec,pageable);
+        final Page<User> p = userService.findAll(spec, pageable);
         checkPages(p.getTotalPages(), pageable.getPageNumber());
-        final List<UserDTO> list=p.stream().map(user -> conversionService.convert(user,UserDTO.class)).collect(Collectors.toList());
+        final List<UserDTO> list = p.stream().map(user -> conversionService.convert(user, UserDTO.class)).collect(Collectors.toList());
         return ResponseEntity.status(list.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
                 .body(list);
@@ -76,17 +80,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody UserLoginDTO userDTO){
-        User user=userService.login(userDTO.getEmail(),userDTO.getPass());
-        if (user!=null){
-            UserDTO dto = conversionService.convert(user, UserDTO.class);
-            return ResponseEntity.ok(new LoginResponse(this.generateToken(dto,user.getUserType().getType())));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<LoginResponse> login(@RequestBody UserLoginDTO userDTO) {
+        User user = userService.findByEmail(userDTO.getEmail());
+        if (user == null || !(passwordEncoder.matches(userDTO.getPass().trim(), user.getPass()))){
+            throw new WrongCredentialsException("Bad user credentials");
         }
+        UserDTO dto = conversionService.convert(user, UserDTO.class);
+        return ResponseEntity.ok(new LoginResponse(this.generateToken(dto, user.getUserType().getType())));
     }
 
-    private String generateToken(UserDTO userDto,String authority) {
+    private String generateToken(UserDTO userDto, String authority) {
         try {
             List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(authority);
             return Jwts

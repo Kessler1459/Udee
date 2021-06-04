@@ -58,10 +58,14 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO("Missing parameter " + ex.getParameterName() + " of type " + ex.getParameterType()));
     }
 
-
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException (DataIntegrityViolationException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO(ex.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(value = WrongCredentialsException.class)
+    public ResponseEntity<MessageDTO> handleBadCredentials(WrongCredentialsException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageDTO(ex.getMessage()));
     }
 
 }
