@@ -18,8 +18,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,17 +31,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static com.Udee.utils.CheckPages.checkPages;
 import static com.Udee.utils.EntityUrlBuilder.buildURL;
 import static com.Udee.utils.PageHeaders.pageHeaders;
+import static com.Udee.utils.ListMapper.listToDto;
 
 @RestController
 @RequestMapping("/api")
@@ -49,15 +48,15 @@ public class MeasureController {
     private final MeasureService measureService;
     private final ElectricMeterService electricMeterService;
     private final ResidenceService residenceService;
-    private final ConversionService conversionService;
+    private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MeasureController(MeasureService measureService, ElectricMeterService electricMeterService, ResidenceService residenceService, ConversionService conversionService, PasswordEncoder passwordEncoder) {
+    public MeasureController(MeasureService measureService, ElectricMeterService electricMeterService, ResidenceService residenceService, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         this.measureService = measureService;
         this.electricMeterService = electricMeterService;
         this.residenceService = residenceService;
-        this.conversionService = conversionService;
+        this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -113,7 +112,7 @@ public class MeasureController {
         checkOwner(r.getUser().getId(), owner.getId());
         Page<Measure> p = measureService.findAll(spec, pageable);
         checkPages(p.getTotalPages(), pageable.getPageNumber());
-        List<MeasureDTO> dtoList = p.stream().map(measure -> conversionService.convert(measure, MeasureDTO.class)).collect(Collectors.toList());
+        List<MeasureDTO> dtoList = listToDto(modelMapper,p.getContent(),MeasureDTO.class);
         return ResponseEntity.status(dtoList.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
                 .body(dtoList);

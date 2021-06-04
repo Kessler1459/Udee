@@ -2,25 +2,24 @@ package com.Udee.controllers;
 
 import com.Udee.PostResponse;
 import com.Udee.models.Brand;
+import com.Udee.models.dto.BillDTO;
 import com.Udee.models.dto.BrandDTO;
 import com.Udee.models.dto.MessageDTO;
 import com.Udee.services.BrandService;
 import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import static com.Udee.utils.ListMapper.listToDto;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.Udee.utils.CheckPages.checkPages;
 import static com.Udee.utils.EntityUrlBuilder.buildURL;
 import static com.Udee.utils.PageHeaders.pageHeaders;
@@ -29,12 +28,12 @@ import static com.Udee.utils.PageHeaders.pageHeaders;
 @RequestMapping("/api/back-office/electricmeters/brands")
 public class BrandController {
     private final BrandService brandService;
-    private final ConversionService conversionService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public BrandController(BrandService brandService, ConversionService conversionService) {
+    public BrandController(BrandService brandService, ModelMapper modelMapper) {
         this.brandService = brandService;
-        this.conversionService = conversionService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
@@ -51,7 +50,7 @@ public class BrandController {
     }) Specification<Brand> spec, Pageable pageable) {
         Page<Brand> list = brandService.findAll(spec, pageable);
         checkPages(list.getTotalPages(), pageable.getPageNumber());
-        List<BrandDTO> dtoList = list.stream().map(brand -> conversionService.convert(brand, BrandDTO.class)).collect(Collectors.toList());
+        List<BrandDTO> dtoList = listToDto(modelMapper,list.getContent(), BrandDTO.class);
         return ResponseEntity.status(list.getSize() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(list.getTotalElements(), list.getTotalPages()))
                 .body(dtoList);

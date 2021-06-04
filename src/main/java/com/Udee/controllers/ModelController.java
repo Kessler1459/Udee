@@ -2,12 +2,14 @@ package com.Udee.controllers;
 
 import com.Udee.PostResponse;
 import com.Udee.models.Model;
+import com.Udee.models.dto.BillDTO;
 import com.Udee.models.dto.MessageDTO;
 import com.Udee.models.dto.ModelDTO;
 import com.Udee.services.ModelService;
 import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -16,11 +18,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import static com.Udee.utils.ListMapper.listToDto;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.Udee.utils.CheckPages.checkPages;
 import static com.Udee.utils.EntityUrlBuilder.buildURL;
 import static com.Udee.utils.PageHeaders.pageHeaders;
@@ -29,12 +29,12 @@ import static com.Udee.utils.PageHeaders.pageHeaders;
 @RequestMapping("/api/back-office/electricmeters/brands/models")
 public class ModelController {
     private final ModelService modelService;
-    private final ConversionService conversionService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ModelController(ModelService modelService, ConversionService conversionService) {
+    public ModelController(ModelService modelService, ModelMapper modelMapper) {
         this.modelService = modelService;
-        this.conversionService = conversionService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
@@ -54,7 +54,7 @@ public class ModelController {
             }) Specification<Model> spec, Pageable pageable) {
         Page<Model> p = modelService.findAll(spec,pageable);
         checkPages(p.getTotalPages(), pageable.getPageNumber());
-        List<ModelDTO> dtoList = p.stream().map(model -> conversionService.convert(model, ModelDTO.class)).collect(Collectors.toList());
+        List<ModelDTO> dtoList = listToDto(modelMapper,p.getContent(), ModelDTO.class);
         return ResponseEntity.status(dtoList.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
                 .body(dtoList);
@@ -62,7 +62,7 @@ public class ModelController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ModelDTO> findById(@PathVariable Integer id){
-        return ResponseEntity.ok(conversionService.convert(modelService.findById(id), ModelDTO.class));
+        return ResponseEntity.ok(modelMapper.map(modelService.findById(id), ModelDTO.class));
     }
 
     @DeleteMapping("/{id}")

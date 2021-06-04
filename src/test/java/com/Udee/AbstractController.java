@@ -20,9 +20,6 @@ public abstract class AbstractController {
     public MockMvc mockMvc;
 
     protected MockMvc givenController(){
-        return MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-                .build();
-
-
+        return MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 }
