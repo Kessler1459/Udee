@@ -1,6 +1,6 @@
 package com.Udee.configuration;
 
-import com.Udee.filters.JWTAuthorizationFilter;
+import com.Udee.filter.JWTAuthorizationFilter;
 import com.Udee.models.UserType;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

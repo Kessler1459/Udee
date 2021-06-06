@@ -1,6 +1,6 @@
 package com.Udee.utils;
 
-import com.Udee.exceptions.PageException;
+import com.Udee.exception.PageException;
 
 public class CheckPages {
     /**

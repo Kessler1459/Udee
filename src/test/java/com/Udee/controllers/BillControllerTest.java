@@ -1,6 +1,7 @@
 package com.Udee.controllers;
 
 
+import com.Udee.controller.BillController;
 import com.Udee.models.Bill;
 import com.Udee.models.Residence;
 import com.Udee.models.User;
@@ -8,8 +9,8 @@ import com.Udee.models.UserType;
 import com.Udee.models.dto.BillDTO;
 import com.Udee.models.dto.UserDTO;
 import com.Udee.models.projections.BillProjection;
-import com.Udee.services.BillService;
-import com.Udee.services.ResidenceService;
+import com.Udee.service.BillService;
+import com.Udee.service.ResidenceService;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
