@@ -25,4 +25,6 @@ public interface BillProjection {
     LocalDate getDate();
 
     LocalDate getExpiration();
+
+    void setId(Integer id);
 }
