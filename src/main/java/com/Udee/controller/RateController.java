@@ -15,6 +15,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 import java.util.List;
 import static com.Udee.utils.CheckPages.checkPages;
 import static com.Udee.utils.EntityUrlBuilder.buildURL;
@@ -31,9 +33,10 @@ public class RateController {
     }
 
     @PostMapping
-    public PostResponse addRate(@RequestBody Rate r) {
+    public ResponseEntity<PostResponse> addRate(@RequestBody Rate r) {
         r = rateService.addRate(r);
-        return new PostResponse(buildURL("/api/back-office/rates", r.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        PostResponse result =new PostResponse(buildURL("api/back-office/rates", r.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        return ResponseEntity.created(URI.create(result.getUrl())).body(result);
     }
 
     @GetMapping
@@ -43,7 +46,7 @@ public class RateController {
     }) Specification<Rate> spec, Pageable pageable) {
         Page<Rate> p = rateService.findAll(spec,pageable);
         checkPages(p.getTotalPages(), pageable.getPageNumber());
-        return ResponseEntity.status(p.getSize() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(p.getContent().size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders((long)p.getContent().size(), p.getTotalPages()))
                 .body(p.getContent());
     }
