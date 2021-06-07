@@ -44,7 +44,7 @@ public class RateController {
         Page<Rate> p = rateService.findAll(spec,pageable);
         checkPages(p.getTotalPages(), pageable.getPageNumber());
         return ResponseEntity.status(p.getSize() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
-                .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
+                .headers(pageHeaders((long)p.getContent().size(), p.getTotalPages()))
                 .body(p.getContent());
     }
 

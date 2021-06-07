@@ -74,7 +74,7 @@ public class PaymentController {
         Page<Payment> p = paymentService.findAll(spec, pagination);
         checkPages(p.getTotalPages(), pagination.getPageNumber());
         List<PaymentDTO> dtoList= listToDto(modelMapper,p.getContent(), PaymentDTO.class);
-        return ResponseEntity.status(p.getTotalElements() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(dtoList.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(p.getTotalElements(), p.getTotalPages()))
                 .body(dtoList);
     }

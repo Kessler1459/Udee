@@ -50,7 +50,7 @@ public class BrandController {
         Page<Brand> list = brandService.findAll(spec, pageable);
         checkPages(list.getTotalPages(), pageable.getPageNumber());
         List<BrandDTO> dtoList = listToDto(modelMapper,list.getContent(), BrandDTO.class);
-        return ResponseEntity.status(list.getSize() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(dtoList.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
                 .headers(pageHeaders(list.getTotalElements(), list.getTotalPages()))
                 .body(dtoList);
     }
