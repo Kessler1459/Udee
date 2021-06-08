@@ -6,4 +6,5 @@ public interface ElectricMeterProjection {
     Integer getId();
     String getSerial();
     Model getModel();
+    void setId(Integer id);
 }
