@@ -44,8 +44,8 @@ class RateControllerTest {
 
     @Test
     void testAddRate() {
-        Rate r = Rate.builder().name("rate1").priceXKW(2.0f).build();
-        r.setId(1);
+        Rate r = Rate.builder().name("rate1").id(1).priceXKW(2.0f).build();
+
         when(rateService.addRate(r)).thenReturn(r);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
