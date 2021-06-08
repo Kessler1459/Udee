@@ -51,7 +51,7 @@ public class PaymentController {
             throw new AccessDeniedException("Not owned by this user");
         }
         payment = paymentService.addPayment(b, payment);
-        PostResponse res = new PostResponse(buildURL("payments", payment.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        PostResponse res = new PostResponse(buildURL("api/back-office/payments", payment.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }
 
