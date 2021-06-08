@@ -25,7 +25,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +60,7 @@ public class UserController {
         return ResponseEntity.created(URI.create(p.getUrl())).body(p);
     }
 
-    @GetMapping("back-office/clients")
+    @GetMapping("back-office/users")
     public ResponseEntity<List<UserDTO>> findAll(Pageable pageable, @And({
             @Spec(path = "name", spec = Like.class),
             @Spec(path = "lastName", spec = Like.class),
@@ -74,7 +73,7 @@ public class UserController {
                 .body(list);
     }
 
-    @GetMapping("/back-office/clients/{id}")
+    @GetMapping("/back-office/users/{id}")
     public ResponseEntity<UserProjection> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.findProjectedById(id));
     }
