@@ -124,6 +124,7 @@ public class BrandControllerTest {
 
     @Test
     public void testDeleteBrand(){
+        doNothing().when(brandService).delete(anyInt());
         ResponseEntity<MessageDTO> response=brandController.deleteBrand(anyInt());
         assertEquals(HttpStatus.OK,response.getStatusCode());
     }
