@@ -46,12 +46,14 @@ public class BillControllerTest {
     ModelMapper modelMapper;
     BillController billController;
     List<Bill> billList;
+    BillController spyController;
 
     @BeforeEach
     void setUp() {
         openMocks(this);
         modelMapper = new ModelMapper();
         billController = new BillController(billService, residenceService, modelMapper);
+        spyController=spy(billController);
         billList = List.of(Bill.builder().id(1).date(LocalDate.of(2021, 1, 1)).usage(20).build()
                 , Bill.builder().id(1).date(LocalDate.of(2021, 2, 1)).usage(100).build());
     }
@@ -65,11 +67,11 @@ public class BillControllerTest {
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
-        BillController bController = spy(billController);
         List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
-        doReturn(ResponseEntity.ok(dtoList)).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.ok(dtoList)).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByUser(spec, pageable, 1, auth));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUser(spec, pageable, 1, auth));
+
         assertEquals(r.getStatusCode(), HttpStatus.OK);
         assertEquals(r.getBody(), dtoList);
     }
@@ -83,10 +85,9 @@ public class BillControllerTest {
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
-        BillController bController = spy(billController);
-        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByUser(spec, pageable, 1, auth));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUser(spec, pageable, 1, auth));
         assertEquals(r.getStatusCode(), HttpStatus.NO_CONTENT);
         assertEquals(r.getBody(), Collections.emptyList());
     }
@@ -100,10 +101,9 @@ public class BillControllerTest {
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(2).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
-        BillController bController = spy(billController);
-        doReturn(ResponseEntity.ok("")).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.ok("")).when(spyController).getListResponseEntity(pageable, spec);
 
-        assertThrows(AccessDeniedException.class, () -> bController.findAllByUser(spec, pageable, 1, auth));
+        assertThrows(AccessDeniedException.class, () -> spyController.findAllByUser(spec, pageable, 1, auth));
     }
 
     @Test
@@ -120,9 +120,9 @@ public class BillControllerTest {
                         User.builder().id(1).build()).build());
         List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
         BillController bController = spy(billController);
-        doReturn(ResponseEntity.ok(dtoList)).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.ok(dtoList)).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByResidence(pageable, auth, 1, spec));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByResidence(pageable, auth, 1, spec));
 
         assertEquals(r.getStatusCode(), HttpStatus.OK);
         assertEquals(r.getBody(), dtoList);
@@ -140,11 +140,9 @@ public class BillControllerTest {
         when(residenceService.findById(1)).thenReturn(
                 Residence.builder().user(
                         User.builder().id(1).build()).build());
-        List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
-        BillController bController = spy(billController);
-        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByResidence(pageable, auth, 1, spec));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByResidence(pageable, auth, 1, spec));
 
         assertEquals(r.getStatusCode(), HttpStatus.NO_CONTENT);
         assertEquals(r.getBody(), Collections.emptyList());
@@ -162,10 +160,9 @@ public class BillControllerTest {
         when(residenceService.findById(1)).thenReturn(
                 Residence.builder().user(
                         User.builder().id(2).build()).build());
-        BillController bController = spy(billController);
-        doReturn(ResponseEntity.ok("")).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.ok("")).when(spyController).getListResponseEntity(pageable, spec);
 
-        assertThrows(AccessDeniedException.class, () -> bController.findAllByResidence(pageable, auth, 1, spec));
+        assertThrows(AccessDeniedException.class, () -> spyController.findAllByResidence(pageable, auth, 1, spec));
     }
 
     @Test
@@ -177,11 +174,10 @@ public class BillControllerTest {
                 UserDTO.builder()
                         .userType(UserType.EMPLOYEE).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
-        BillController bController = spy(billController);
         List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
-        doReturn(ResponseEntity.ok(dtoList)).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.ok(dtoList)).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByUserBack(pageable,spec ));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUserBack(pageable,spec ));
 
         assertEquals(r.getStatusCode(), HttpStatus.OK);
         assertEquals(r.getBody(), dtoList);
@@ -196,11 +192,9 @@ public class BillControllerTest {
                 UserDTO.builder()
                         .userType(UserType.EMPLOYEE).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
-        BillController bController = spy(billController);
-        List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
-        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByUserBack(pageable,spec ));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUserBack(pageable,spec ));
 
         assertEquals(r.getStatusCode(), HttpStatus.NO_CONTENT);
         assertEquals(r.getBody(), Collections.emptyList());
@@ -219,10 +213,9 @@ public class BillControllerTest {
                 Residence.builder().user(
                         User.builder().id(1).build()).build());
         List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
-        BillController bController = spy(billController);
-        doReturn(ResponseEntity.ok(dtoList)).when(bController).getListResponseEntity(pageable, spec);
+        doReturn(ResponseEntity.ok(dtoList)).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByResidenceBack(pageable, spec));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByResidenceBack(pageable, spec));
 
         assertEquals(r.getStatusCode(), HttpStatus.OK);
         assertEquals(r.getBody(), dtoList);
@@ -239,10 +232,10 @@ public class BillControllerTest {
         );
         when(residenceService.findById(1)).thenReturn(Residence.builder().user(
                 User.builder().id(1).build()).build());
-        BillController bController = spy(billController);
-        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(bController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> bController.findAllByResidenceBack(pageable, spec));
+        doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(spyController).getListResponseEntity(pageable, spec);
+
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByResidenceBack(pageable, spec));
 
         assertEquals(r.getStatusCode(), HttpStatus.NO_CONTENT);
         assertEquals(r.getBody(), Collections.emptyList());
