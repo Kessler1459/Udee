@@ -1,8 +1,12 @@
 package com.Udee.models.dto;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class UserLoginDTO {
     private String email;
     private String pass;
