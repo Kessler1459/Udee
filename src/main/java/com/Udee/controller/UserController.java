@@ -8,6 +8,7 @@ import com.Udee.models.dto.UserDTO;
 import com.Udee.models.dto.UserLoginDTO;
 import com.Udee.models.projections.UserProjection;
 import com.Udee.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import static com.Udee.utils.ListMapper.listToDto;
 import static com.Udee.utils.CheckPages.checkPages;
@@ -88,7 +90,7 @@ public class UserController {
         return ResponseEntity.ok(new LoginResponse(this.generateToken(dto, user.getUserType().getType())));
     }
 
-    private String generateToken(UserDTO userDto, String authority) {
+    public String generateToken(UserDTO userDto, String authority) {
         try {
             List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(authority);
             return Jwts
@@ -100,8 +102,8 @@ public class UserController {
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + 100000000))
                     .signWith(SignatureAlgorithm.HS512, JWT_SECRET.getBytes()).compact();
-        } catch (Exception e) {
-            return "dummy";
+        } catch (JsonProcessingException e) {
+            return null;
         }
     }
 }
