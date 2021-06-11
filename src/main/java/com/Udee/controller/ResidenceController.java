@@ -33,11 +33,11 @@ public class ResidenceController {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ResidenceController(ResidenceService residenceService, ConversionService conversionService, ModelMapper modelMapper) {
+    public ResidenceController(ResidenceService residenceService,  ModelMapper modelMapper) {
         this.residenceService = residenceService;
         this.modelMapper = modelMapper;
     }
-    //todo a los no content agregar array en body
+
     @GetMapping
     public ResponseEntity<List<ResidenceDTO>> findAll(Pageable pageable, @And({
             @Spec(path = "electricMeter.serial", params = "electricMeter", spec = Like.class),
