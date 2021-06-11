@@ -71,7 +71,7 @@ public class MeasureController {
         }
         m.setElectricMeter(meter);
         m = measureService.addMeasure(m);
-        PostResponse res = new PostResponse(buildURL("/api/back-office/measures", m.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        PostResponse res = new PostResponse(buildURL("api/back-office/measures", m.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }
 
@@ -123,6 +123,11 @@ public class MeasureController {
                                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         final List<UserRank> userRanks = measureService.findRankBetweenDates(from, to);
         return ResponseEntity.status(userRanks.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(userRanks);
+    }
+
+    @GetMapping("/back-office/measures/{id}")
+    public ResponseEntity<MeasureDTO> findMeasureById(@PathVariable Integer id){
+        return ResponseEntity.ok(modelMapper.map(measureService.findById(id),MeasureDTO.class));
     }
 
     private void checkOwner(Integer userId, Integer authId) {
