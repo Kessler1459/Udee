@@ -39,7 +39,7 @@ public class ModelController {
     public ResponseEntity<PostResponse> addModel(@RequestBody Model model){
         Model m=modelService.addModel(model);
         PostResponse p = new PostResponse(
-                buildURL("api/back-office/electricmeters/models", m.getId().toString()),
+                buildURL("api/back-office/electricmeters/brands/models", m.getId().toString()),
                 HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(p.getUrl())).body(p);
     }
