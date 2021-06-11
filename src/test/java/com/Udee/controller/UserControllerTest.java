@@ -1,6 +1,5 @@
 package com.Udee.controller;
 
-import com.Udee.AbstractController;
 import com.Udee.PostResponse;
 import com.Udee.exception.WrongCredentialsException;
 import com.Udee.models.User;
@@ -41,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-public class UserControllerTest extends AbstractController {
+public class UserControllerTest {
     @Mock
     private UserService userService;
 
