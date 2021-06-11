@@ -1,5 +1,6 @@
 package com.Udee.service;
 
+import com.Udee.exception.notFound.MeasureNotFoundException;
 import com.Udee.models.Measure;
 import com.Udee.models.Residence;
 import com.Udee.models.User;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -62,5 +64,9 @@ public class MeasureService {
 
     public List<UserRank> findRankBetweenDates(LocalDate from, LocalDate to) {
         return measureRepository.findRankBetweenDates(from, to);
+    }
+
+    public Measure findById(Integer id) {
+        return measureRepository.findById(BigInteger.valueOf(id)).orElseThrow(MeasureNotFoundException::new);
     }
 }
