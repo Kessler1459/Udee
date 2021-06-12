@@ -29,7 +29,8 @@ public class Brand {
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<Model> models;
+    @Builder.Default
+    private List<Model> models=new ArrayList<>();
 
     public Brand(String name) {
         this.name = name;
