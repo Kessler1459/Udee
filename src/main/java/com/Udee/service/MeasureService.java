@@ -47,11 +47,11 @@ public class MeasureService {
 
     public UsageDTO findUsageBetweenDatesByClient(Integer clientId, LocalDate from, LocalDate to) {
         User u = userService.findById(clientId);
-        List<Measure> measures = measureRepository.findAllByUserBetweenDates(clientId, from, to);
+        List<Measure> measures = measureRepository.findAllByUserBetweenDates(u.getId(), from, to);
         return getUsageDTO(measures);
     }
 
-    private UsageDTO getUsageDTO(List<Measure> measures) {
+    public UsageDTO getUsageDTO(List<Measure> measures) {
         int usage = 0;
         float price = 0;
         for (Measure m : measures) {
