@@ -31,6 +31,8 @@ public class BrandControllerTest {
 
     @Mock
     BrandService brandService;
+    @Mock
+    Specification specification;
     BrandController brandController;
     ModelMapper modelMapper;
     List<Brand> brandList;
@@ -46,22 +48,19 @@ public class BrandControllerTest {
     @Test
     public void testAddBrand() {
         Brand newBrand = Brand.builder().id(1).name("marca").build();
-        PostResponse p = new PostResponse("http://localhost/api/back-office/electricmeters/brands/" + newBrand.getId(), HttpStatus.CREATED.getReasonPhrase());
-        ResponseEntity<PostResponse> r = ResponseEntity.created(URI.create(p.getUrl())).body(p);
         when(brandService.addBrand(newBrand)).thenReturn(newBrand);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         ResponseEntity<PostResponse> result = brandController.addBrand(newBrand);
 
-        assertEquals(r, result);
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
         verify(brandService, times(1)).addBrand(newBrand);
 
     }
 
     @Test
     public void testFindAllHttp200() {
-        Specification specification = mock(Specification.class);
         Pageable pageable = PageRequest.of(0, 2);
         Page<Brand> page = new PageImpl<Brand>(brandList, pageable, 2);
         when(brandService.findAll(specification, pageable)).thenReturn(page);
@@ -72,14 +71,11 @@ public class BrandControllerTest {
 
         assertEquals(exp.getBody(), result.getBody());
         assertEquals(exp.getStatusCode(), result.getStatusCode());
-        assertEquals("2", result.getHeaders().get("X-totalElements").get(0));
-        assertEquals("1", result.getHeaders().get("X-totalPages").get(0));
         verify(brandService, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
     public void testFindAllHttp204() {
-        Specification specification = mock(Specification.class);
         Pageable pageable = PageRequest.of(0, 2);
         Page<Brand> page = new PageImpl<Brand>(Collections.emptyList(), pageable, 0);
         when(brandService.findAll(specification, pageable)).thenReturn(page);
@@ -89,8 +85,6 @@ public class BrandControllerTest {
 
         assertEquals(exp.getBody(), result.getBody());
         assertEquals(exp.getStatusCode(), result.getStatusCode());
-        assertEquals("0", result.getHeaders().get("X-totalElements").get(0));
-        assertEquals("0", result.getHeaders().get("X-totalPages").get(0));
         verify(brandService, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
