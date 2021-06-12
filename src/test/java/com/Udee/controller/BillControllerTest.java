@@ -11,7 +11,9 @@ import com.Udee.models.projections.BillProjection;
 import com.Udee.service.BillService;
 import com.Udee.service.ResidenceService;
 import org.junit.jupiter.api.Assertions;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -43,6 +45,11 @@ public class BillControllerTest {
 
     @Mock
     ResidenceService residenceService;
+    @Mock
+    Specification spec;
+    @Mock
+    Authentication auth;
+    Pageable pageable;
     ModelMapper modelMapper;
     BillController billController;
     List<Bill> billList;
@@ -51,18 +58,16 @@ public class BillControllerTest {
     @BeforeEach
     void setUp() {
         openMocks(this);
+        pageable = PageRequest.of(0, 10);
         modelMapper = new ModelMapper();
         billController = new BillController(billService, residenceService, modelMapper);
-        spyController=spy(billController);
+        spyController = spy(billController);
         billList = List.of(Bill.builder().id(1).date(LocalDate.of(2021, 1, 1)).usage(20).build()
                 , Bill.builder().id(1).date(LocalDate.of(2021, 2, 1)).usage(100).build());
     }
 
     @Test
     public void testFindAllByUserWithAccessHttp200() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -78,9 +83,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByUserWithAccessHttp204() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -94,9 +96,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByUserWithoutAccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(2).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -108,9 +107,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByResidenceWithAccessHttp200() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -119,7 +115,6 @@ public class BillControllerTest {
                 Residence.builder().user(
                         User.builder().id(1).build()).build());
         List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
-        BillController bController = spy(billController);
         doReturn(ResponseEntity.ok(dtoList)).when(spyController).getListResponseEntity(pageable, spec);
 
         ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByResidence(pageable, auth, 1, spec));
@@ -130,9 +125,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByResidenceWithAccessHttp204() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -150,9 +142,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByResidenceWithoutAccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.CLIENT).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -167,9 +156,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByUserBackHttp200() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.EMPLOYEE).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -177,7 +163,7 @@ public class BillControllerTest {
         List<BillDTO> dtoList = listToDto(modelMapper, billList, BillDTO.class);
         doReturn(ResponseEntity.ok(dtoList)).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUserBack(pageable,spec ));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUserBack(pageable, spec));
 
         assertEquals(r.getStatusCode(), HttpStatus.OK);
         assertEquals(r.getBody(), dtoList);
@@ -185,16 +171,13 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByUserBackHttp204() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.EMPLOYEE).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
         doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(spyController).getListResponseEntity(pageable, spec);
 
-        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUserBack(pageable,spec ));
+        ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByUserBack(pageable, spec));
 
         assertEquals(r.getStatusCode(), HttpStatus.NO_CONTENT);
         assertEquals(r.getBody(), Collections.emptyList());
@@ -202,9 +185,6 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByResidenceBackHttp200() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.EMPLOYEE).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
@@ -223,16 +203,12 @@ public class BillControllerTest {
 
     @Test
     public void testFindAllByResidenceBackHttp204() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
-        Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(
                 UserDTO.builder()
                         .userType(UserType.EMPLOYEE).id(1).dni(231423423).email("asd@gmail.com").name("pepe").lastName("dasdasf").build()
         );
         when(residenceService.findById(1)).thenReturn(Residence.builder().user(
                 User.builder().id(1).build()).build());
-
         doReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList())).when(spyController).getListResponseEntity(pageable, spec);
 
         ResponseEntity r = assertDoesNotThrow(() -> spyController.findAllByResidenceBack(pageable, spec));
@@ -243,8 +219,6 @@ public class BillControllerTest {
 
     @Test
     public void testGetListResponseEntityFilled() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
         Page<Bill> page = new PageImpl<>(billList, pageable, 2);
         List<BillDTO> dtoList = listToDto(modelMapper, page.getContent(), BillDTO.class);
         when(billService.findAll(spec, pageable)).thenReturn(page);
@@ -259,8 +233,6 @@ public class BillControllerTest {
 
     @Test
     public void testGetListResponseEntityEmpty() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Specification spec = mock(Specification.class);
         Page<Bill> page = new PageImpl<>(Collections.emptyList(), pageable, 0);
         List<BillDTO> dtoList = listToDto(modelMapper, page.getContent(), BillDTO.class);
         when(billService.findAll(spec, pageable)).thenReturn(page);
@@ -302,7 +274,7 @@ public class BillControllerTest {
         Integer userId = 1;
         Integer authId = 2;
 
-        assertThrows(AccessDeniedException.class,() -> billController.checkOwner(userId, authId));
+        assertThrows(AccessDeniedException.class, () -> billController.checkOwner(userId, authId));
     }
 }
 
