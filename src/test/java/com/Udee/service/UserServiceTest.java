@@ -4,6 +4,7 @@ import com.Udee.exception.notFound.UserNotFoundException;
 import com.Udee.models.User;
 import com.Udee.models.projections.UserProjection;
 import com.Udee.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,8 @@ import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.openMocks;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +29,15 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
     private UserService userService;
+    private User u;
 
-    private User u = User.builder().id(1).email("asd@gmail.com").build();
+    @BeforeEach
+    void setUp() {
+        openMocks(this);
+        userService=new UserService(userRepository);
+        u = User.builder().id(1).email("asd@gmail.com").build();
+    }
 
     @Test
     public void testFindByIdFound() {
