@@ -71,7 +71,7 @@ public class MeasureController {
         }
         m.setElectricMeter(meter);
         m = measureService.addMeasure(m);
-        PostResponse res = new PostResponse(buildURL("api/back-office/measures", m.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
+        PostResponse res = new PostResponse(buildURL("api/measures", m.getId().toString()), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.created(URI.create(res.getUrl())).body(res);
     }
 

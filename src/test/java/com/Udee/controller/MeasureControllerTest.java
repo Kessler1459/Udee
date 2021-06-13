@@ -82,7 +82,7 @@ class MeasureControllerTest {
         ResponseEntity<PostResponse> result = Assertions.assertDoesNotThrow(() ->
                 measureController.addMeasure(dto));
 
-        Assertions.assertEquals("http://localhost/api/back-office/measures/1", result.getBody().getUrl());
+        Assertions.assertEquals("http://localhost/api/measures/1", result.getBody().getUrl());
         Assertions.assertEquals(HttpStatus.CREATED, result.getStatusCode());
     }
 
