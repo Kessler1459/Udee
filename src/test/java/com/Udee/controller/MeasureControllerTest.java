@@ -88,7 +88,6 @@ class MeasureControllerTest {
 
     @Test
     void testAddMeasureMeterExistsPasswordNotMatches() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01 00:00:00").serialNumber("serial343434").value(100f).build();
@@ -101,7 +100,6 @@ class MeasureControllerTest {
 
     @Test
     void testAddMeasureMeterNotExistsPasswordMatches() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01 00:00:00").serialNumber("serial343434").value(100f).build();
