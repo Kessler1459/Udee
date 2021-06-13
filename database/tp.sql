@@ -253,7 +253,8 @@ BEGIN
         SELECT measure
         INTO vLMeasure
         FROM measures
-        WHERE electric_meter_id = new.electric_meter_id AND DATETIME = vLDate;
+        WHERE electric_meter_id = new.electric_meter_id AND DATETIME = vLDate
+        ORDER BY measure DESC LIMIT 1;
         SET new.`usage`=(new.measure - vLMeasure);
     ELSE
 	SET new.`usage`=new.measure;	

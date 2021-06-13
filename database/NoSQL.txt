@@ -93,15 +93,15 @@ electric_meter: []={
 	},
 	pass:string
 }
-
-measures:[]={
-	id:integer,
-	electric_meter_id:integer,
-	datetime:datetime,
-	measure:integer,
-	usage:integer,
-	price:float
-}
+residence-measures:[]=
+	measures:[]={
+		id:integer,
+		electric_meter_id:integer,
+		datetime:datetime,
+		measure:integer,
+		usage:integer,
+		price:float
+	}
 
 
 
