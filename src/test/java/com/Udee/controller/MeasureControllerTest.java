@@ -70,11 +70,10 @@ class MeasureControllerTest {
 
     @Test
     void testAddMeasureMeterExistsPasswordMatches() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01 00:00:00").serialNumber("serial343434").value(100f).build();
-        Measure m = Measure.builder().measure((int) dto.getValue()).id(BigInteger.ONE).dateTime(LocalDateTime.parse(dto.getDate(), formatter)).build();
+        MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date(LocalDateTime.now().toString()).serialNumber("serial343434").value(100f).build();
+        Measure m = Measure.builder().measure((int) dto.getValue()).id(BigInteger.ONE).dateTime(LocalDateTime.parse(dto.getDate())).build();
         when(electricMeterService.findOneBySerial(anyString())).thenReturn(ElectricMeter.builder().serial("serial343434").build());
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
         when(measureService.addMeasure(any())).thenReturn(m);

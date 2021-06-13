@@ -63,8 +63,7 @@ public class MeasureController {
 
     @PostMapping("/measures")
     public ResponseEntity<PostResponse> addMeasure(@RequestBody MeasureRDTO measure) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Measure m = Measure.builder().measure((int) measure.getValue()).dateTime(LocalDateTime.parse(measure.getDate(),formatter)).build();
+        Measure m = Measure.builder().measure((int) measure.getValue()).dateTime(LocalDateTime.parse(measure.getDate())).build();
         ElectricMeter meter = electricMeterService.findOneBySerial(measure.getSerialNumber().trim());
         if (meter == null || !(passwordEncoder.matches(measure.getPassword().trim(), meter.getPass()))) {
             throw new WrongCredentialsException("Bad meter credentials");
@@ -78,8 +77,8 @@ public class MeasureController {
     @GetMapping("/web/residences/{residenceId}/usage")
     public ResponseEntity<UsageDTO> findUsageBetweenDatesByResidence(
             @PathVariable Integer residenceId,
-            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             Authentication auth) {
         UserDTO owner = (UserDTO) auth.getPrincipal();
         Residence r = residenceService.findById(residenceId);
