@@ -89,7 +89,7 @@ class MeasureControllerTest {
     void testAddMeasureMeterExistsPasswordNotMatches() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01 00:00:00").serialNumber("serial343434").value(100f).build();
+        MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01T00:00:00").serialNumber("serial343434").value(100f).build();
         when(electricMeterService.findOneBySerial(anyString())).thenReturn(ElectricMeter.builder().serial("serial343434").build());
         when(passwordEncoder.matches(any(), any())).thenReturn(false);
 
@@ -101,7 +101,7 @@ class MeasureControllerTest {
     void testAddMeasureMeterNotExistsPasswordMatches() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01 00:00:00").serialNumber("serial343434").value(100f).build();
+        MeasureRDTO dto = MeasureRDTO.builder().password("asdasdasd").date("2020-01-01T00:00:00").serialNumber("serial343434").value(100f).build();
         when(electricMeterService.findOneBySerial(anyString())).thenReturn(null);
 
         Assertions.assertThrows(WrongCredentialsException.class,() ->  measureController.addMeasure(dto));
